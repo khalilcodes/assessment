@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notes API Tester</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>Notes API Tester</h1>
+<p class="subtitle">Test backend endpoints at <code>http://localhost:3000</code> (change <strong>BASE</strong> below if needed).</p>
+
+<div class="grid">
+
+  <!-- CREATE -->
+  <section>
+    <h2><span class="dot" style="background:#16a34a"></span> Create <span class="tag tag-green">POST /notes</span></h2>
+    <form id="form-create" onsubmit="event.preventDefault(); createNote();">
+      <label for="c-title">Title</label>
+      <input id="c-title" name="title" type="text" placeholder="Note title" required />
+      <label for="c-content">Content</label>
+      <textarea id="c-content" name="content" placeholder="Note content"></textarea>
+      <button class="btn-primary" type="submit" style="margin-top:0.75rem">Create</button>
+    </form>
+  </section>
+
+  <!-- RETRIEVE ALL -->
+  <section>
+    <h2><span class="dot" style="background:#2563eb"></span> Retrieve All <span class="tag tag-blue">GET /notes</span></h2>
+    <button class="btn-secondary" onclick="getAllNotes()">Fetch All</button>
+  </section>
+
+  <!-- RETRIEVE BY ID -->
+  <section>
+    <h2><span class="dot" style="background:#2563eb"></span> Retrieve by ID <span class="tag tag-blue">GET /notes/:id</span></h2>
+    <div class="row">
+      <input id="r-id" type="text" placeholder="Note ID" />
+      <button class="btn-secondary" onclick="getNoteById()">Fetch</button>
+    </div>
+  </section>
+
+  <!-- UPDATE -->
+  <section>
+    <h2><span class="dot" style="background:#d97706"></span> Update <span class="tag tag-amber">PUT /notes/:id</span></h2>
+    <form id="form-update" onsubmit="event.preventDefault(); updateNote();">
+      <div class="row">
+        <input id="u-id" type="text" placeholder="Note ID" required />
+      </div>
+      <label for="u-title">Title</label>
+      <input id="u-title" type="text" placeholder="New title" />
+      <label for="u-content">Content</label>
+      <textarea id="u-content" placeholder="New content"></textarea>
+      <button class="btn-secondary" type="submit" style="margin-top:0.75rem">Update</button>
+    </form>
+  </section>
+
+  <!-- DELETE -->
+  <section>
+    <h2><span class="dot" style="background:#dc2626"></span> Delete <span class="tag tag-red">DELETE /notes/:id</span></h2>
+    <div class="row">
+      <input id="d-id" type="text" placeholder="Note ID" />
+      <button class="btn-danger" onclick="deleteNote()">Delete</button>
+    </div>
+  </section>
+
+</div>
+
+<div style="margin-top:1.25rem; display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;">
+  <label for="base-url" style="margin:0; font-weight:700;">BASE URL:</label>
+  <input id="base-url" type="text" value="http://localhost:3000" style="max-width:320px; flex:1;" oninput="BASE = this.value.trim() || 'http://localhost:3000'" />
+  <button class="btn-muted" onclick="clearOutput()">Clear Output</button>
+</div>
+
+<pre id="output" class="output">Results will appear here...</pre>
+
+<script>
+  let BASE = 'http://localhost:3000';
+
+  function show(data) {
+    const out = document.getElementById('output');
+    out.textContent = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
+  }
+
+  function clearOutput() { document.getElementById('output').textContent = 'Results will appear here...'; }
+
+  async function createNote() {
+    try {
+      const res = await fetch(BASE + '/notes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: document.getElementById('c-title').value, content: document.getElementById('c-content').value })
+      });
+      const data = await res.json().catch(() => ({}));
+      show({ status: res.status, ok: res.ok, body: data });
+    } catch (e) { show('Error: ' + e.message); }
+  }
+
+  async function getAllNotes() {
+    try {
+      const res = await fetch(BASE + '/notes');
+      const data = await res.json().catch(() => ({}));
+      show({ status: res.status, ok: res.ok, body: data });
+    } catch (e) { show('Error: ' + e.message); }
+  }
+
+  async function getNoteById() {
+    const id = document.getElementById('r-id').value.trim();
+    if (!id) return show('Provide an ID');
+    try {
+      const res = await fetch(BASE + '/notes/' + id);
+      const data = await res.json().catch(() => ({}));
+      show({ status: res.status, ok: res.ok, body: data });
+    } catch (e) { show('Error: ' + e.message); }
+  }
+
+  async function updateNote() {
+    const id = document.getElementById('u-id').value.trim();
+    if (!id) return show('Provide an ID');
+    try {
+      const res = await fetch(BASE + '/notes/' + id, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: document.getElementById('u-title').value, content: document.getElementById('u-content').value })
+      });
+      const data = await res.json().catch(() => ({}));
+      show({ status: res.status, ok: res.ok, body: data });
+    } catch (e) { show('Error: ' + e.message); }
+  }
+
+  async function deleteNote() {
+    const id = document.getElementById('d-id').value.trim();
+    if (!id) return show('Provide an ID');
+    try {
+      const res = await fetch(BASE + '/notes/' + id, { method: 'DELETE' });
+      const data = await res.json().catch(() => ({}));
+      show({ status: res.status, ok: res.ok, body: data });
+    } catch (e) { show('Error: ' + e.message); }
+  }
+</script>
+
+</body>
+</html>
