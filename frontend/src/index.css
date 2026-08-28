@@ -1,0 +1,23 @@
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap');
+
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+html {
+  scroll-behavior: smooth;
+}
+body {
+  background-color: #f6f2ec;
+  color: #1c1917;
+  -webkit-font-smoothing: antialiased;
+}
+*:focus-visible {
+  outline: 2px solid #c2751f;
+  outline-offset: 3px;
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
